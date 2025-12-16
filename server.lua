@@ -2,7 +2,7 @@ RegisterCommand('starterpack', function(source, args, rawCommand)
     local source = source
     local citizenid = get_player_identifier(source)
     if not citizenid then
-        exports['oeva_bridge']:notify(source, 'Unable to identify your character.', 'error', 5000)
+        exports['s6la_bridge']:notify(source, 'Unable to identify your character.', 'error', 5000)
         return
     end
     
@@ -10,7 +10,7 @@ RegisterCommand('starterpack', function(source, args, rawCommand)
         ['@citizenid'] = citizenid
     }, function(result)
         if result and result[1] and result[1].claimed == 1 then
-            exports['oeva_bridge']:notify(source, 'You have already claimed your starter pack!', 'error', 5000)
+            exports['s6la_bridge']:notify(source, 'You have already claimed your starter pack!', 'error', 5000)
             return
         end
         
@@ -37,12 +37,12 @@ end, false)
 function give_starterpack(source, citizenid)
     pay_player(source, 2000, 'cash')
     
-    exports['oeva_bridge']:add_item(source, 'sandwich', 5)
-    exports['oeva_bridge']:add_item(source, 'beer', 5)
+    exports['s6la_bridge']:add_item(source, 'sandwich', 5)
+    exports['s6la_bridge']:add_item(source, 'beer', 5)
     
     TriggerClientEvent('s6la_construction:spawn_starterpack_vehicle', source)
     
-    exports['oeva_bridge']:notify(source, 'Thank you for playing S6LA! This is a starter pack to get you started off in the city. We hope you enjoy!', 'success', 8000)
+    exports['s6la_bridge']:notify(source, 'Thank you for playing S6LA! This is a starter pack to get you started off in the city. We hope you enjoy!', 'success', 8000)
     
     if Config.debug then
         print(string.format('[Construction] Starter pack given to player %s (citizenid: %s)', source, citizenid))
