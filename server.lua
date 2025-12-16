@@ -1,3 +1,59 @@
+local QBCore = nil
+local ESX = nil
+
+local function get_player_identifier(source)
+    local bridge = exports['s6la_bridge']:ret_bridge_table()
+    if bridge and bridge.framework == 'qb-core' and QBCore then
+        local Player = QBCore.Functions.GetPlayer(source)
+        if Player then
+            return Player.PlayerData.citizenid
+        end
+    elseif bridge and bridge.framework == 'es_extended' and ESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        if xPlayer then
+            return xPlayer.identifier
+        end
+    end
+    return nil
+end
+
+local function pay_player(source, amount, payment_type)
+    payment_type = payment_type or 'bank'
+    local bridge = exports['s6la_bridge']:ret_bridge_table()
+    
+    if bridge and bridge.framework == 'qb-core' and QBCore then
+        local Player = QBCore.Functions.GetPlayer(source)
+        if Player then
+            if payment_type == 'bank' then
+                Player.Functions.AddMoney('bank', amount, 'starterpack')
+            else
+                Player.Functions.AddMoney('cash', amount, 'starterpack')
+            end
+            return true
+        end
+    elseif bridge and bridge.framework == 'es_extended' and ESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        if xPlayer then
+            if payment_type == 'bank' then
+                xPlayer.addAccountMoney('bank', amount)
+            else
+                xPlayer.addMoney(amount)
+            end
+            return true
+        end
+    end
+    return false
+end
+
+CreateThread(function()
+    Wait(1000)
+    local bridge = exports['s6la_bridge']:ret_bridge_table()
+    if bridge and bridge.framework == 'qb-core' then
+        QBCore = exports['qb-core']:GetCoreObject()
+    elseif bridge and bridge.framework == 'es_extended' then
+        ESX = exports['es_extended']:getSharedObject()
+    end
+end)
 RegisterCommand('starterpack', function(source, args, rawCommand)
     local source = source
     local citizenid = get_player_identifier(source)
